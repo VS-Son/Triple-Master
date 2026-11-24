@@ -270,6 +270,52 @@ MonoBehaviour:
   prefab: {fileID: 3740531155524343920, guid: 5bf55fa4d01b8d641b29da5b56489d63, type: 3}
   coinObject: {fileID: 1049484169}
   amountCoin: {fileID: 1817915999}
+--- !u!1 &220679617
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 220679619}
+  - component: {fileID: 220679618}
+  m_Layer: 0
+  m_Name: AdsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &220679618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 220679617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6d020a57e4e959428c688fc4e9cb334, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appKey: 
+  rewardedAdUnitId: 
+--- !u!4 &220679619
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 220679617}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!198 &222657035 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 1610680391175702559, guid: 6833e827c2b28044c8cb408a03c787cb, type: 3}
@@ -4298,6 +4344,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420034}
   - {fileID: 363185795}
+  - {fileID: 220679619}
   - {fileID: 1928494086}
   - {fileID: 593183985}
   - {fileID: 2078785945}

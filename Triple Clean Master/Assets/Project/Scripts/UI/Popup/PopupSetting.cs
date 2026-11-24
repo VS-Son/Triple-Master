@@ -41,6 +41,7 @@ namespace Project.Scripts.UI.Popup
         {
             base.OnClosed();
             OnClosePopup?.Invoke();
+            UIManager.GetCommon<StatusBar>(CommonUIType.StatusBar).OnEnableStatusCoin(true);
         }
 
         private void SetEditTiles()

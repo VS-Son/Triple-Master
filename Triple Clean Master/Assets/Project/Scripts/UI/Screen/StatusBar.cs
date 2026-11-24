@@ -21,7 +21,7 @@ namespace Project.Scripts.UI.Screen
         public TMP_Text textCoin;
         public GameObject setting;
         public GameObject back;
-        [SerializeField] private Button statusCoin;
+        public Button statusCoin;
         public Transform iconCoin;
         public static ShopOpenSource Source;
 
@@ -52,11 +52,16 @@ namespace Project.Scripts.UI.Screen
             PlayScreen.UpdateLevelText -= UpdateLevelText;
         }
 
+        public void OnEnableStatusCoin(bool isActive)
+        {
+            statusCoin.enabled = isActive;
+        }
         public void OnSetting()
         {
             AudioManager.Instance.PlaySfx(AudioConstants.HighPitchDefault);
             ShowButtonSetting(false);
             ShowButtonBack(false);
+            statusCoin.enabled = false;
             var popup = UIManager.OpenPopup<PopupSetting>(PopupType.Setting);
             popup.OnClosePopup -= HandleSettingClosed;
             popup.OnClosePopup += HandleSettingClosed;
@@ -89,12 +94,14 @@ namespace Project.Scripts.UI.Screen
                     setting.SetActive(true);
                     textTitle.gameObject.SetActive(false);
                     UIManager.CloseUI<ShopScreen>(ScreenType.ShopScreen);
+                    statusCoin.enabled = true;
                     UIManager.GetUI<HomeScreen>(ScreenType.HomeScreen).UpdayeTextLevel();
                     break;
 
                 case ShopOpenSource.Gameplay:
                     StateUI.ChangeState(ScreenType.PlayScreen);
                     UIManager.CloseUI<ShopScreen>(ScreenType.ShopScreen);
+                    statusCoin.enabled = true;
                     UpdateLevelText();
                     break;
             }
@@ -107,6 +114,7 @@ namespace Project.Scripts.UI.Screen
             StateUI.ChangeState(ScreenType.ShopScreen);
             setting.SetActive(false);
             back.SetActive(true);
+            statusCoin.enabled = false;
             textTitle.gameObject.SetActive(true);
             textTitle.text = "Store";
             UIManager.GetUI<ShopScreen>(ScreenType.ShopScreen).UpdateTextUndo(PlayerInventoryManager.UndoCount);

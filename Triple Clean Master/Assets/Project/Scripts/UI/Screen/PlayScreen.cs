@@ -85,26 +85,8 @@ namespace Project.Scripts.UI.Screen
             {
                 if (undo.IsDisplay(TypeBooster.Undo))
                 {
-                    BoardCollectTile.Instance.UndoTile(1);
-                    if (PlayerInventoryManager.UndoCount > 0)
-                    {
-                        PlayerInventoryManager.Instance.ConsumeBooster(TypeBooster.Undo, 1);
-                        undo.UpdateTextBooster(TypeBooster.Undo, PlayerInventoryManager.UndoCount,100);
-                       
-                    }
-                    else
-                    {
-                        if (PlayerInventoryManager.HasEnoughCoin(100))
-                        {
-                            PlayerInventoryManager.SpendCoin(100);
-                        }
-                        else
-                        {
-                            Debug.Log("Display ads");
-                            
-                        }
-                    }
-
+                    TryUseBooster(TypeBooster.Undo, PlayerInventoryManager.UndoCount, 100,
+                        () => BoardCollectTile.Instance.UndoTile(1));
                 }
                 else
                 {
@@ -127,24 +109,8 @@ namespace Project.Scripts.UI.Screen
                 IsClick = true;
                 if (!BoardCollectTile.IsMatching && magicWand.IsDisplay(TypeBooster.MagicWand))
                 {
-                    TileManager.Instance.CollectMatchThreeTiles();
-                    if (PlayerInventoryManager.MagicWandCount > 0)
-                    {
-                        PlayerInventoryManager.Instance.ConsumeBooster(TypeBooster.MagicWand, 1);
-                        magicWand.UpdateTextBooster(TypeBooster.MagicWand,PlayerInventoryManager.MagicWandCount,200);
-                    }
-                    else
-                    {
-                        if (PlayerInventoryManager.HasEnoughCoin(200))
-                        {
-                            PlayerInventoryManager.SpendCoin(200);
-                        }
-                        else
-                        {
-                            Debug.Log("Display ads");
-                        }
-                    }
-                    
+                    TryUseBooster(TypeBooster.MagicWand, PlayerInventoryManager.MagicWandCount, 200,
+                        () => TileManager.Instance.CollectMatchThreeTiles());
                 }
             }
             else
@@ -159,29 +125,36 @@ namespace Project.Scripts.UI.Screen
             {
                 if (!TileManager.IsCompleteShuffle && shuffle.IsDisplay(TypeBooster.Shuffle))
                 {
-                    TileManager.Instance.ShuffleGridTiles();
-                    if (PlayerInventoryManager.ShuffleCount > 0)
-                    {
-                        PlayerInventoryManager.Instance.ConsumeBooster(TypeBooster.Shuffle, 1);
-                        shuffle.UpdateTextBooster(TypeBooster.Shuffle, PlayerInventoryManager.ShuffleCount,300);
-                    }
-                    else
-                    {
-                        if (PlayerInventoryManager.HasEnoughCoin(300))
-                        {
-                            PlayerInventoryManager.SpendCoin(300);
-
-                        }
-                        else
-                        {
-                            Debug.Log("Display ads");
-                        }
-                    }
+                    TryUseBooster(TypeBooster.Shuffle, PlayerInventoryManager.ShuffleCount, 300,
+                        () => TileManager.Instance.ShuffleGridTiles());
                 }
             }
             else
             {
                 ToastMessage.ShowMessage(MessageConstants.MessageUnlock(4));
+            }
+        }
+
+        // Trả bằng lượt có sẵn > coin > xem quảng cáo; hiệu ứng chỉ chạy khi đã trả xong
+        private void TryUseBooster(TypeBooster type, int count, int price, Action effect)
+        {
+            if (count > 0)
+            {
+                PlayerInventoryManager.Instance.ConsumeBooster(type, 1);
+                effect();
+                UpdateTextBoosters();
+            }
+            else if (PlayerInventoryManager.HasEnoughCoin(price))
+            {
+                PlayerInventoryManager.SpendCoin(price);
+                effect();
+                UpdateTextBoosters();
+            }
+            else
+            {
+                AdsManager.ShowRewarded(
+                    onRewarded: effect,
+                    onFailed: () => ToastMessage.ShowMessage(MessageConstants.MessageAdsNotReady));
             }
         }
 

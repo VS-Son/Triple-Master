@@ -21,7 +21,6 @@ namespace Project.Scripts.UI.Screen
         }
         public void UpdateTextShuffle( int currentShuffle)
         {
-           
             shuffleValue.text = $"{currentShuffle}";
         }
     }

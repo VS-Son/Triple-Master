@@ -66,3 +66,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+### JVM crash logs (Rider / Gradle)
+hs_err_pid*.log
+replay_pid*.log
