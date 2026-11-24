@@ -13,7 +13,7 @@ namespace Project.Scriptable
         public EnhancedScrollerCellView item;
     }
     [Serializable]
-    [CreateAssetMenu(fileName = "List Item", menuName = "IAP_Shop/Shop item")]
+    [CreateAssetMenu(fileName = "List Item", menuName = "IAP_Shop/ShopScreen item")]
     public class ListShopItemPrefab : ScriptableObject
     {
         public List<ShopItem> items = new();

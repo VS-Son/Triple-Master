@@ -6,14 +6,13 @@ using UnityEngine;
 
 namespace Project.Scripts.Manager
 {
-    public enum ScreenType { HomeScreen, PlayScreen, Revive, NextScreen, Shop, StatusBar, Setting, PopupEditTheme }
+    public enum ScreenType { HomeScreen, PlayScreen, NextScreen, ShopScreen}
     public enum PopupType {  Revive, Setting, PopupEditTheme, LoadAds, Sorry }
     public enum CommonUIType {  StatusBar }
-
     
-
-
-
+    
+    
+    
     [Serializable]
     public class ScreenConfig
     {
@@ -36,13 +35,12 @@ namespace Project.Scripts.Manager
 
     public class UIManager : Singleton<UIManager>
     {
-        [Header("Roots")]
+        [Header("Roots")] 
         [SerializeField] private Transform screenRoot;
         [SerializeField] private Transform popupRoot;
         [SerializeField] private Transform commonRoot;
         
         //public List<ScreenConfig> uiConfigs = new();
-        
         public List<ScreenConfig> screenConfigs = new();
         public List<PopupConfig> popupConfigs = new();
         public List<CommonUIConfig> commonUIConfigs = new();
@@ -50,12 +48,11 @@ namespace Project.Scripts.Manager
         private const string FolderScreen = "UI/Screen/";
         private const string FolderPopup = "UI/Popup/";
         private const string FolderCommon = "UI/Common/";
-
-
+        
         private static readonly Dictionary<ScreenType, string> ScreenPaths = new();
         private static readonly Dictionary<PopupType, string> PopupPaths = new();
         private static readonly Dictionary<CommonUIType, string> CommonPaths = new();
-
+        
         private static readonly Dictionary<ScreenType, UIScreen> ScreenCache = new();
         private static readonly Dictionary<PopupType, UIPopup> PopupCache = new();
         private static readonly Dictionary<CommonUIType, UICommon> CommonCache = new();

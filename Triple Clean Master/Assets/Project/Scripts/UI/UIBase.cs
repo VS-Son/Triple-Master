@@ -25,16 +25,8 @@ namespace Project.Scripts.UI
         protected virtual void OnClosed() { }
     }
 
-    public abstract class UIScreen : UIBase
-    {
-        
-    }
-
-    public abstract class UICommon : UIBase
-    {
-       
-    }
-
+    public abstract class UIScreen : UIBase {}
+    public abstract class UICommon : UIBase {}
     public abstract class UIPopup : UIBase
     {
         public virtual bool CloseOnBack => true;

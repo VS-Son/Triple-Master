@@ -31,7 +31,7 @@ namespace Project.Scripts.IAP_shop.ShopData
     }
 
     [Serializable]
-    [CreateAssetMenu(fileName = "Shop Data Config", menuName = "IAP_Shop/Shop Config")]
+    [CreateAssetMenu(fileName = "ShopScreen Data Config", menuName = "IAP_Shop/ShopScreen Config")]
     public class ShopDataConfig : ScriptableObject
     {
         [SerializeField]private List<PackageData> packageCellViews;

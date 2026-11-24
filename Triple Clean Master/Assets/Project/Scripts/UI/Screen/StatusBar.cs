@@ -88,13 +88,13 @@ namespace Project.Scripts.UI.Screen
                     back.SetActive(false);
                     setting.SetActive(true);
                     textTitle.gameObject.SetActive(false);
-                    UIManager.CloseUI<ShopScreen>(ScreenType.Shop);
+                    UIManager.CloseUI<ShopScreen>(ScreenType.ShopScreen);
                     UIManager.GetUI<HomeScreen>(ScreenType.HomeScreen).UpdayeTextLevel();
                     break;
 
                 case ShopOpenSource.Gameplay:
                     StateUI.ChangeState(ScreenType.PlayScreen);
-                    UIManager.CloseUI<ShopScreen>(ScreenType.Shop);
+                    UIManager.CloseUI<ShopScreen>(ScreenType.ShopScreen);
                     UpdateLevelText();
                     break;
             }
@@ -104,14 +104,14 @@ namespace Project.Scripts.UI.Screen
         {
             AudioManager.Instance.PlaySfx(AudioConstants.HighPitchDefault);
             var source = StateUI.IsState(ScreenType.PlayScreen) ? ShopOpenSource.Gameplay : ShopOpenSource.HomeScreen;
-            StateUI.ChangeState(ScreenType.Shop);
+            StateUI.ChangeState(ScreenType.ShopScreen);
             setting.SetActive(false);
             back.SetActive(true);
             textTitle.gameObject.SetActive(true);
             textTitle.text = "Store";
-            UIManager.GetUI<ShopScreen>(ScreenType.Shop).UpdateTextUndo(PlayerInventoryManager.UndoCount);
-            UIManager.GetUI<ShopScreen>(ScreenType.Shop).UpdateTextMagicWand(PlayerInventoryManager.MagicWandCount);
-            UIManager.GetUI<ShopScreen>(ScreenType.Shop).UpdateTextShuffle(PlayerInventoryManager.ShuffleCount);
+            UIManager.GetUI<ShopScreen>(ScreenType.ShopScreen).UpdateTextUndo(PlayerInventoryManager.UndoCount);
+            UIManager.GetUI<ShopScreen>(ScreenType.ShopScreen).UpdateTextMagicWand(PlayerInventoryManager.MagicWandCount);
+            UIManager.GetUI<ShopScreen>(ScreenType.ShopScreen).UpdateTextShuffle(PlayerInventoryManager.ShuffleCount);
 
             Source = source;
             

@@ -33,8 +33,8 @@ namespace Project.Scripts.UI
                     UIManager.OpenScreen<PlayScreen>(ScreenType.PlayScreen);
                     break;
 
-                case ScreenType.Shop:
-                    UIManager.OpenScreen<ShopScreen>(ScreenType.Shop);
+                case ScreenType.ShopScreen:
+                    UIManager.OpenScreen<ShopScreen>(ScreenType.ShopScreen);
                     break;
 
                 case ScreenType.NextScreen:
