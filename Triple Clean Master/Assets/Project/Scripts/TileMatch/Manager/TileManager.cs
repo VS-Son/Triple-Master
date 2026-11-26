@@ -386,34 +386,42 @@ namespace Project.Scripts.TileMatch.Manager
                 List<Tile> collectTile = availableTiles[randomId];
                 List<Tile> result = collectTile.GetRange(0, 3);
                 Util.ShuffleList(result);
-                foreach (var tile in result)
-                {
-                    tile.isCollected = true;
-                    BoardCollectTile.Instance.CollectTile(tile);
-                    HandleTileCollected(tile);
-                    tile.spriteTile.color = Util.SetAlphaSprite(255);
-
-
-                }
-
+                CollectByMagicWand(result);
                 return;
             }
 
-            TileId tileId = listCollect[0].tileId;
-            int countSlot = listCollect.Count(t => t.tileId == tileId);
-            int missingCount = 3 - countSlot;
-            List<Tile> remaining = FindTileIdSame(tileId, missingCount);
-            if (remaining.Count == missingCount)
+            var boardTypes = listCollect
+                .Where(t => !t.isClearing)
+                .GroupBy(t => t.tileId)
+                .Select(g => new { Id = g.Key, Count = g.Count(), First = listCollect.IndexOf(g.First()) })
+                .OrderByDescending(g => g.Count)
+                .ThenBy(g => g.First);
+
+            foreach (var type in boardTypes)
             {
-                foreach (var tile in remaining)
+                int missingCount = 3 - type.Count;
+                if (missingCount <= 0) continue;
+                List<Tile> remaining = FindTileIdSame(type.Id, missingCount);
+                if (remaining.Count == missingCount)
                 {
-                    BoardCollectTile.Instance.CollectTile(tile);
-                    HandleTileCollected(tile);
-                    tile.spriteTile.color = Util.SetAlphaSprite(255);
-
+                    CollectByMagicWand(remaining);
+                    return;
                 }
-
             }
+
+            PlayScreen.IsClick = false;
+        }
+
+        private void CollectByMagicWand(List<Tile> tiles)
+        {
+            foreach (var tile in tiles)
+            {
+                tile.collider.enabled = false;
+                tile.transform.localRotation = Quaternion.identity;
+                HandleTileCollected(tile);
+                tile.spriteTile.color = Util.SetAlphaSprite(255);
+            }
+            BoardCollectTile.Instance.CollectTiles(tiles);
         }
 
         private List<Tile> FindTileIdSame(TileId tileId, int missingCount = 3)
@@ -497,7 +505,6 @@ namespace Project.Scripts.TileMatch.Manager
                 seq.Join(tile.transform.DOMove(originalPos[tile], 0.35f).SetEase(Ease.OutBack));
                 seq.Join(tile.transform.DOScale(Util.SetScale(), 0.35f));
             }
-            // Gọi 1 lần khi toàn bộ shuffle xong (trước đây mỗi tile tạo 1 DelayedCall riêng)
             seq.OnComplete(() =>
             {
                 DOVirtual.DelayedCall(0.3f, () => IsCompleteShuffle = false);

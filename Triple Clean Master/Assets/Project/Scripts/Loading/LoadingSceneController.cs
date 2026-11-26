@@ -35,7 +35,6 @@ namespace Project.Scripts.Loading
             int dots = 0;
             while (true)
             {
-                // chấm chưa hiện vẫn giữ chỗ (alpha 0) để chữ căn giữa không bị xô lệch
                 textLoading.text = loadingLabel + new string('.', dots) + "<alpha=#00>" + new string('.', 3 - dots);
                 dots = (dots + 1) % 4;
                 yield return wait;
@@ -53,7 +52,6 @@ namespace Project.Scripts.Loading
             while (progress < 1f)
             {
                 time += Time.deltaTime;
-                // khi allowSceneActivation = false, progress chỉ lên tới 0.9
                 float loadProgress = Mathf.Clamp01(operation.progress / 0.9f);
                 float timeProgress = Mathf.Clamp01(time / minDuration);
                 progress = Mathf.Min(loadProgress, timeProgress);
@@ -70,7 +68,7 @@ namespace Project.Scripts.Loading
                 yield return null;
             }
 
-            operation.allowSceneActivation = true; // chuyển sang scene main, loading scene tự bị hủy
+            operation.allowSceneActivation = true;
         }
 
         private void SetProgress(float progress)

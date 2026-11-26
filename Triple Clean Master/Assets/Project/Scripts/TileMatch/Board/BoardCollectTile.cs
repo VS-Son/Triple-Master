@@ -42,21 +42,84 @@ namespace Project.Scripts.TileMatch.Board
                 PlayScreen.SetBoosterAlpha(TypeBooster.Undo, 1f);
             }
 
-            Debug.Log("slot index: " + _slotIndex);
-            tile.transform.parent = slots[_slotIndex];
+            tile.transform.parent = GetSlotParent(_slotIndex);
             SetMatchThree(tile);
-            if (CheckShowRevive())
+            if (!_isBatchCollecting)
             {
-                TileManager.Instance.DisableInput(false);
-                DOVirtual.DelayedCall(0.5f, (() => UIManager.OpenPopup<PopupRevive>(PopupType.Revive)));
-
+                TryShowRevive();
             }
         }
 
-       
+        private bool _isBatchCollecting;
+
+        public void CollectTiles(List<Tile> tiles)
+        {
+            _isBatchCollecting = true;
+            try
+            {
+                foreach (var tile in tiles)
+                {
+                    CollectTile(tile);
+                }
+            }
+            finally
+            {
+                _isBatchCollecting = false;
+            }
+            TryShowRevive();
+        }
+
+        private bool _isReviveShown;
+
+        private const int MaxBoardSlots = 7;
+
+        public bool IsFull => _collectedTile.Count >= MaxBoardSlots;
+
+        private bool HasPendingClear()
+        {
+            if (_isClearing || _clearQueue.Count > 0) return true;
+            foreach (var t in _collectedTile)
+            {
+                if (t.isClearing) return true;
+            }
+            return false;
+        }
+
+        private void TryShowRevive()
+        {
+            if (_isReviveShown || !CheckShowRevive()) return;
+            _isReviveShown = true;
+            TileManager.Instance.DisableInput(false);
+            DOVirtual.DelayedCall(0.5f, () =>
+            {
+                if (CheckShowRevive())
+                {
+                    UIManager.OpenPopup<PopupRevive>(PopupType.Revive);
+                }
+                else
+                {
+                    _isReviveShown = false;
+                    TileManager.Instance.DisableInput(true);
+                }
+            });
+        }
+
         private bool CheckShowRevive()
         {
-            return _countSlot >= 7 && !IsMatching;
+            return !_isBatchCollecting && IsFull && !HasPendingClear();
+        }
+
+        private Transform GetSlotParent(int index)
+        {
+            return slots[Mathf.Clamp(index, 0, slots.Count - 1)];
+        }
+
+        private Vector3 GetSlotPosition(int index)
+        {
+            int last = slots.Count - 1;
+            if (index <= last) return slots[Mathf.Max(0, index)].position;
+            Vector3 step = slots.Count > 1 ? slots[last].position - slots[last - 1].position : Vector3.zero;
+            return slots[last].position + step * (index - last);
         }
 
         private void SetMatchThree(Tile tile)
@@ -74,7 +137,7 @@ namespace Project.Scripts.TileMatch.Board
             switch (matchThree.Count)
             {
                 case 1:
-                    tile.transform.DOMove(slots[_slotIndex].position, 0.3f).SetId("collect")
+                    tile.transform.DOMove(GetSlotPosition(_slotIndex), 0.3f).SetId("collect")
                         .OnComplete((ReArrangeBoard));
                     tile.transform.DOScale(1, 0.3f);
                     break;
@@ -110,7 +173,7 @@ namespace Project.Scripts.TileMatch.Board
             _collectedTile.Remove(tile);
             _collectedTile.Insert(targetIndex, tile);
             DOVirtual.DelayedCall(0.1f, ReArrangeBoard);
-            tile.transform.DOMove(slots[_slotIndex].position, 0.3f).OnComplete((() =>
+            tile.transform.DOMove(GetSlotPosition(_slotIndex), 0.3f).OnComplete((() =>
             {
                 if (index == 1 && tile != null)
                 {
@@ -141,7 +204,8 @@ namespace Project.Scripts.TileMatch.Board
 
             _isClearing = false;
             IsMatching = false;
-            
+
+            TryShowRevive();
         }
 
         IEnumerator ClearMatchedTiles(List<Tile> tileMatch)
@@ -188,15 +252,12 @@ namespace Project.Scripts.TileMatch.Board
             }
         }
 
-        // Thời gian hiệu ứng clear thường (giữ kiểu cũ: từng tile thu nhỏ tại chỗ, lần lượt trái -> phải)
-        private const float ClearPopTime = 0.08f;     // nảy nhẹ trước khi thu nhỏ
-        private const float ClearShrinkTime = 0.14f;  // thu nhỏ về 0
-        private const float ClearStagger = 0.07f;     // độ trễ giữa các tile (chồng lên nhau cho liền mạch)
+        private const float ClearPopTime = 0.08f;
+        private const float ClearShrinkTime = 0.14f;
+        private const float ClearStagger = 0.07f;
         private const float ClearPopScale = 1.12f;
         private readonly HashSet<Tile> _mergingTiles = new();
 
-        // Cả 3 tile nằm trong 1 Sequence, lệch nhau một chút thay vì chờ từng cái xong mới tới cái sau
-        // -> vẫn là hiệu ứng lần lượt như cũ nhưng không bị khựng giữa các tile.
         private IEnumerator SequentialClearAnimation(List<Tile> tiles)
         {
             Sequence seq = DOTween.Sequence();
@@ -208,16 +269,15 @@ namespace Project.Scripts.TileMatch.Board
 
                 float start = i * ClearStagger;
                 Vector3 baseScale = Vector3.one;
-                Vector3 slotPos = tile.transform.parent != null ? tile.transform.parent.position : tile.transform.position;
+                int listIndex = _collectedTile.IndexOf(tile);
+                Vector3 slotPos = listIndex >= 0 ? GetSlotPosition(listIndex) : tile.transform.position;
                 int effectIndex = slots.IndexOf(tile.transform.parent);
 
-                // Đưa tile về đúng tâm slot trong lúc nảy (phòng khi tween sắp xếp lại bị ngắt giữa chừng)
                 seq.Insert(start, tile.transform.DOMove(slotPos, ClearPopTime).SetEase(Ease.OutQuad));
                 seq.Insert(start, tile.transform.DOScale(baseScale * ClearPopScale, ClearPopTime).SetEase(Ease.OutQuad));
                 seq.Insert(start + ClearPopTime,
                     tile.transform.DOScale(0f, ClearShrinkTime).SetEase(Ease.InBack, 1.5f));
 
-                // Particle bật ngay trước khi tile biến mất hẳn để nối liền mạch
                 bool isFirst = i == 0;
                 seq.InsertCallback(start + ClearPopTime + ClearShrinkTime * 0.7f, () =>
                 {
@@ -284,10 +344,9 @@ namespace Project.Scripts.TileMatch.Board
             for (int i = 0; i < _collectedTile.Count; i++)
             {
                 var tile = _collectedTile[i];
-                tile.transform.parent = slots[i];
-                // Tile đang chạy hiệu ứng clear thì không kéo về slot / scale lại, tránh giật
+                tile.transform.parent = GetSlotParent(i);
                 if (_mergingTiles.Contains(tile)) continue;
-                tile.transform.DOMove(slots[i].position, 0.25f).SetEase(Ease.OutCubic);
+                tile.transform.DOMove(GetSlotPosition(i), 0.25f).SetEase(Ease.OutCubic);
                 tile.transform.DOScale(1, 0.15f).SetEase(Ease.OutQuad);
             }
         }
@@ -297,7 +356,6 @@ namespace Project.Scripts.TileMatch.Board
             int count = Math.Min(quantity, _originalTile.Count);
             bool isRevive = quantity > 1;
 
-            // Gom toàn bộ tween undo vào 1 Sequence để biết chính xác khi nào tất cả đã xong
             Sequence undoSeq = DOTween.Sequence();
             for (int i = 0; i < count; i++)
             {
@@ -314,7 +372,6 @@ namespace Project.Scripts.TileMatch.Board
 
             if (isRevive)
             {
-                // Revive: khóa click cho tới khi tile bay về + shuffle xong, chỉ shuffle 1 lần
                 TileManager.Instance.DisableInput(false);
                 undoSeq.OnComplete(() =>
                     DOVirtual.DelayedCall(0.1f, () =>
@@ -322,6 +379,7 @@ namespace Project.Scripts.TileMatch.Board
             }
 
             _originalTile.RemoveRange(_originalTile.Count - count, count);
+            _isReviveShown = false;
             _countSlot -= count;
             ReArrangeBoard();
             if (_collectedTile.Count <= 0)
@@ -344,6 +402,7 @@ namespace Project.Scripts.TileMatch.Board
             _originalTile.Clear();
             _clearQueue.Clear();
             _mergingTiles.Clear();
+            _isReviveShown = false;
             _isClearing = false;
             IsMatching = false;
             PlayScreen.IsClick = false;

@@ -5,15 +5,12 @@ using UnityEngine.EventSystems;
 
 namespace Project.Scripts.Manager
 {
-    // Lớp bọc quảng cáo LevelPlay: game chỉ gọi ShowRewarded, không gọi thẳng SDK.
     public class AdsManager : Singleton<AdsManager>
     {
         [SerializeField] private string appKey;
         [SerializeField] private string rewardedAdUnitId;
 
-        // Đợi tối đa bao lâu sau khi đóng ads để nhận OnAdRewarded (một số mạng gửi sau OnAdClosed)
         private const float RewardGraceTime = 1.5f;
-        // Trễ nhỏ sau khi đóng ads để game resume xong rồi mới chạy hiệu ứng thưởng
         private const float RewardDelayAfterClose = 0.2f;
 
         private LevelPlayRewardedAd _rewardedAd;
@@ -22,8 +19,6 @@ namespace Project.Scripts.Manager
         private Action _onCancel;
         private bool _isShowing;
 
-        // Event của SDK có thể đến ngoài main thread hoặc khi app đang pause (ads che màn hình),
-        // nên callback SDK chỉ set cờ; mọi xử lý game chạy trong Update sau khi ads đã đóng.
         private volatile bool _rewardEarned;
         private volatile bool _adClosed;
         private volatile bool _displayFailed;
@@ -59,9 +54,6 @@ namespace Project.Scripts.Manager
             Debug.LogWarning($"[Ads] LevelPlay init failed: {error}");
         }
 
-        /// <param name="onRewarded">Chạy sau khi ads đã đóng và người chơi được thưởng.</param>
-        /// <param name="onFailed">Ads chưa sẵn sàng hoặc hiển thị lỗi.</param>
-        /// <param name="onCancel">Người chơi đóng ads sớm, không nhận thưởng.</param>
         public static void ShowRewarded(Action onRewarded, Action onFailed = null, Action onCancel = null)
         {
             var instance = Instance;
@@ -87,8 +79,6 @@ namespace Project.Scripts.Manager
             ad.ShowAd();
         }
 
-        // Khóa toàn bộ click (UI + tiles đều đi qua EventSystem) từ lúc gọi ShowAd
-        // đến khi ads đóng và thưởng đã xử lý xong.
         private EventSystem _blockedEventSystem;
 
         private void SetInputBlocked(bool blocked)

@@ -67,7 +67,6 @@ namespace Project.Scripts.Manager
 
         private void Awake()
         {
-            // Load sớm trong Awake để UI (OnEnable/Start) luôn đọc đúng dữ liệu đã lưu khi mở lại app
             EnsureLoaded();
         }
 
@@ -101,7 +100,6 @@ namespace Project.Scripts.Manager
             RefreshAllBoosterStates();
         }
 
-        // Tính lại trạng thái hiển thị của cả 3 booster: còn lượt > đủ coin > xem ads
         public static void RefreshAllBoosterStates()
         {
             EnsureLoaded();

@@ -56,7 +56,6 @@ namespace Project.Scripts.TileMatch.Tiles
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log("Click");
             if (!isSelect)
             {
                 if (_isShaking) return;

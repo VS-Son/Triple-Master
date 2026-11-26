@@ -83,7 +83,6 @@ namespace Project.Scripts.UI.Components.booster
         {
             if (type == typeBooster)
             {
-                // Luôn cập nhật cả 2 text để khi đổi trạng thái (số lượng <-> coin) không hiện số cũ
                 boosterValue.text = $"{value}";
                 boosterCoin.text = $"{spendCoin}";
                 

@@ -28,7 +28,6 @@ namespace Project.Scripts.UI.Screen
             PackageCellView.OnPurchase += OnPurchase;
             UpdateUnlockBooster();
             UpdateTextBoosters();
-            // Mở lại app / vào màn chơi: kiểm tra lượt + coin để hiện đúng số lượng / giá coin / ads
             PlayerInventoryManager.RefreshAllBoosterStates();
         }
 
@@ -114,7 +113,6 @@ namespace Project.Scripts.UI.Screen
                     TryUseBooster(TypeBooster.MagicWand, PlayerInventoryManager.MagicWandCount, 200,
                         () =>
                         {
-                            // Bật cờ ngay trước khi tile bay lên board (sau khi đã trả lượt/coin/xem xong ads)
                             IsClick = true;
                             TileManager.Instance.CollectMatchThreeTiles();
                         });
@@ -142,7 +140,6 @@ namespace Project.Scripts.UI.Screen
             }
         }
 
-        // Trả bằng lượt có sẵn > coin > xem quảng cáo; hiệu ứng chỉ chạy khi đã trả xong
         private void TryUseBooster(TypeBooster type, int count, int price, Action effect)
         {
             if (count > 0)
@@ -159,7 +156,6 @@ namespace Project.Scripts.UI.Screen
             }
             else
             {
-                // effect chỉ chạy sau khi ads đã đóng hẳn và người chơi được thưởng
                 AdsManager.ShowRewarded(
                     onRewarded: () =>
                     {

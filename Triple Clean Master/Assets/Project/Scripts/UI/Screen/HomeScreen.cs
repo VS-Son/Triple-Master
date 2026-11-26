@@ -31,8 +31,6 @@ namespace Project.Scripts.UI.Screen
          UpdayeTextLevel();
       }
 
-      // Dùng 1 Sequence thay cho coroutine: tween không phụ thuộc GameObject active,
-      // nên khi chuyển sang Shop/screen khác giữa chừng, animation vẫn chạy tiếp, không bị đứng.
       private Sequence _introSequence;
 
       private void PlayIntro()
