@@ -28,6 +28,8 @@ namespace Project.Scripts.UI.Screen
             PackageCellView.OnPurchase += OnPurchase;
             UpdateUnlockBooster();
             UpdateTextBoosters();
+            // Mở lại app / vào màn chơi: kiểm tra lượt + coin để hiện đúng số lượng / giá coin / ads
+            PlayerInventoryManager.RefreshAllBoosterStates();
         }
 
         private void OnDisable()
@@ -52,6 +54,7 @@ namespace Project.Scripts.UI.Screen
             //TileManager.Instance.OnInit();
             UpdateLevelText?.Invoke();
             UpdateUnlockBooster();
+            PlayerInventoryManager.RefreshAllBoosterStates();
         }
 
         private void UpdateUnlockBooster()
@@ -64,12 +67,12 @@ namespace Project.Scripts.UI.Screen
 
             if (GameplayManager.IsMagicWandUnlocked)
             {
-                magicWand.OnDisplayBooster(TypeBooster.MagicWand, 1f,PlayerInventoryManager.UndoCount );
-                
+                magicWand.OnDisplayBooster(TypeBooster.MagicWand, 1f,PlayerInventoryManager.MagicWandCount );
+
             }
             if (GameplayManager.IsShuffleUnlocked)
             {
-                shuffle.OnDisplayBooster(TypeBooster.Shuffle, 1f,PlayerInventoryManager.UndoCount);
+                shuffle.OnDisplayBooster(TypeBooster.Shuffle, 1f,PlayerInventoryManager.ShuffleCount);
                 
             }       
         }
@@ -106,11 +109,15 @@ namespace Project.Scripts.UI.Screen
             
             if (GameplayManager.IsMagicWandUnlocked )
             {
-                IsClick = true;
                 if (!BoardCollectTile.IsMatching && magicWand.IsDisplay(TypeBooster.MagicWand))
                 {
                     TryUseBooster(TypeBooster.MagicWand, PlayerInventoryManager.MagicWandCount, 200,
-                        () => TileManager.Instance.CollectMatchThreeTiles());
+                        () =>
+                        {
+                            // Bật cờ ngay trước khi tile bay lên board (sau khi đã trả lượt/coin/xem xong ads)
+                            IsClick = true;
+                            TileManager.Instance.CollectMatchThreeTiles();
+                        });
                 }
             }
             else
@@ -152,14 +159,32 @@ namespace Project.Scripts.UI.Screen
             }
             else
             {
+                // effect chỉ chạy sau khi ads đã đóng hẳn và người chơi được thưởng
                 AdsManager.ShowRewarded(
-                    onRewarded: effect,
+                    onRewarded: () =>
+                    {
+                        if (!isActiveAndEnabled) return;
+                        effect();
+                        UpdateTextBoosters();
+                    },
                     onFailed: () => ToastMessage.ShowMessage(MessageConstants.MessageAdsNotReady));
             }
         }
 
+        private static bool IsUnlocked(TypeBooster type)
+        {
+            return type switch
+            {
+                TypeBooster.Undo => GameplayManager.IsUndoUnlocked,
+                TypeBooster.MagicWand => GameplayManager.IsMagicWandUnlocked,
+                TypeBooster.Shuffle => GameplayManager.IsShuffleUnlocked,
+                _ => false
+            };
+        }
+
         private void OnShowBoosterCountRequested(TypeBooster type)
         {
+            if (!IsUnlocked(type)) return;
             undo.DisplayValue(type);
             magicWand.DisplayValue(type);
             shuffle.DisplayValue(type);
@@ -167,30 +192,18 @@ namespace Project.Scripts.UI.Screen
 
         private void OnShowCoinPurchaseRequested(TypeBooster type)
         {
+            if (!IsUnlocked(type)) return;
             undo.DisplayCoin(type);
             magicWand.DisplayCoin(type);
             shuffle.DisplayCoin(type);
         }
 
-        private void OnShowAdUnlockRequested( )
+        private void OnShowAdUnlockRequested(TypeBooster type)
         {
-            if (PlayerInventoryManager.Coin < 300)
-            {
-                shuffle.DisplayAds(PlayerInventoryManager.ShuffleCount);
-            }
-            if (PlayerInventoryManager.Coin < 200)
-            {
-                shuffle.DisplayAds(PlayerInventoryManager.ShuffleCount);
-                magicWand.DisplayAds(PlayerInventoryManager.MagicWandCount);
-            }
-            if (PlayerInventoryManager.Coin < 100)
-            {
-                undo.DisplayAds(PlayerInventoryManager.UndoCount);
-                magicWand.DisplayAds(PlayerInventoryManager.MagicWandCount);
-                shuffle.DisplayAds(PlayerInventoryManager.ShuffleCount);
-            }
-           
-            
+            if (!IsUnlocked(type)) return;
+            undo.DisplayAds(type);
+            magicWand.DisplayAds(type);
+            shuffle.DisplayAds(type);
         }
 
         public void UpdateTextBoosters()

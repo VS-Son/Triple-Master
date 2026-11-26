@@ -12,6 +12,7 @@ using Project.Scripts.TileMatch.Level.Data;
 using Project.Scripts.TileMatch.Tiles;
 using Project.Scripts.TileMatch.Tiles.Data;
 using Project.Scripts.UI;
+using Project.Scripts.UI.Screen;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
@@ -376,6 +377,11 @@ namespace Project.Scripts.TileMatch.Manager
 
                 List<TileId> validTypes =
                     availableTiles.Where(kvp => kvp.Value.Count >= 3).Select(kvl => kvl.Key).ToList();
+                if (validTypes.Count == 0)
+                {
+                    PlayScreen.IsClick = false;
+                    return;
+                }
                 TileId randomId = validTypes[Random.Range(0, validTypes.Count)];
                 List<Tile> collectTile = availableTiles[randomId];
                 List<Tile> result = collectTile.GetRange(0, 3);

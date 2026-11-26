@@ -9,7 +9,7 @@ namespace Project.Scripts.Manager
     {
         public static event Action<TypeBooster> OnShowBoosterCountRequested;
         public static event Action<TypeBooster> OnShowCoinPurchaseRequested;
-        public static event Action OnShowAdUnlockRequested;
+        public static event Action<TypeBooster> OnShowAdUnlockRequested;
         public static Action <int> OnCoinchange;
 
         private const string CoinKey = "Coin";
@@ -28,7 +28,7 @@ namespace Project.Scripts.Manager
 
         public static int UndoCount
         {
-            get => _undo;
+            get { EnsureLoaded(); return _undo; }
             set
             {
                 _undo = Mathf.Max(0, value);
@@ -41,7 +41,7 @@ namespace Project.Scripts.Manager
 
         public static int MagicWandCount
         {
-            get => _magicWand;
+            get { EnsureLoaded(); return _magicWand; }
             set
             {
                 _magicWand = Mathf.Max(0, value);
@@ -53,7 +53,7 @@ namespace Project.Scripts.Manager
 
         public static int ShuffleCount
         {
-            get => _shuffle;
+            get { EnsureLoaded(); return _shuffle; }
             set
             {
                _shuffle = Mathf.Max(0, value);
@@ -65,15 +65,21 @@ namespace Project.Scripts.Manager
 
         }
 
+        private void Awake()
+        {
+            // Load sớm trong Awake để UI (OnEnable/Start) luôn đọc đúng dữ liệu đã lưu khi mở lại app
+            EnsureLoaded();
+        }
+
         private void Start()
         {
-            LoadInventory();
             OnCoinchange?.Invoke(_coin);
+            RefreshAllBoosterStates();
         }
 
         public static int Coin
         {
-            get => _coin;
+            get { EnsureLoaded(); return _coin; }
             set
             {
                 _coin = Mathf.Max(0, value);
@@ -86,35 +92,22 @@ namespace Project.Scripts.Manager
         public static void AddCoin(int amount)
         {
             Coin += amount;
-           
-            if(UndoCount <= 0)
-            {
-                if (HasEnoughCoin(amount))
-                {
-                    OnShowCoinPurchaseRequested?.Invoke(TypeBooster.Undo);
-                }
-            }
-            if(MagicWandCount <= 0)
-            {
-                if (HasEnoughCoin(amount))
-                {
-                    OnShowCoinPurchaseRequested?.Invoke(TypeBooster.MagicWand);
-                }
-            }
-            if(ShuffleCount <= 0)
-            {
-                if (HasEnoughCoin(amount))
-                {
-                    OnShowCoinPurchaseRequested?.Invoke(TypeBooster.Shuffle);
-                }
-            }
-           
+            RefreshAllBoosterStates();
         }
-        
+
         public static void SpendCoin(int amount)
         {
             Coin -= amount;
-            OnShowAdUnlockRequested?.Invoke();
+            RefreshAllBoosterStates();
+        }
+
+        // Tính lại trạng thái hiển thị của cả 3 booster: còn lượt > đủ coin > xem ads
+        public static void RefreshAllBoosterStates()
+        {
+            EnsureLoaded();
+            RefreshBoosterButtonState(TypeBooster.Undo);
+            RefreshBoosterButtonState(TypeBooster.MagicWand);
+            RefreshBoosterButtonState(TypeBooster.Shuffle);
         }
 
 
@@ -163,7 +156,7 @@ namespace Project.Scripts.Manager
                 OnShowCoinPurchaseRequested?.Invoke(type);
                 return;
             }
-            OnShowAdUnlockRequested?.Invoke();
+            OnShowAdUnlockRequested?.Invoke(type);
         }
 
         private static int GetBoosterCount(TypeBooster type)
@@ -188,8 +181,16 @@ namespace Project.Scripts.Manager
             };
         }
 
-        private void LoadInventory()
+        private static bool _isLoaded;
+
+        private static void EnsureLoaded()
         {
+            if (!_isLoaded) LoadInventory();
+        }
+
+        private static void LoadInventory()
+        {
+            _isLoaded = true;
             _coin = PlayerPrefs.GetInt(CoinKey, _coin);
             _undo = PlayerPrefs.GetInt(UndoKey, _undo);
             _magicWand = PlayerPrefs.GetInt(MagicWandKey, _magicWand);

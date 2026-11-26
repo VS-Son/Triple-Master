@@ -83,14 +83,9 @@ namespace Project.Scripts.UI.Components.booster
         {
             if (type == typeBooster)
             {
-                if (value > 0)
-                {
-                    boosterValue.text = $"{value}";
-                }
-                else
-                {
-                    boosterCoin.text = $"{spendCoin}";
-                }
+                // Luôn cập nhật cả 2 text để khi đổi trạng thái (số lượng <-> coin) không hiện số cũ
+                boosterValue.text = $"{value}";
+                boosterCoin.text = $"{spendCoin}";
                 
             }
           
@@ -114,9 +109,9 @@ namespace Project.Scripts.UI.Components.booster
                 ads.SetActive(false);
             }
         }
-        public void DisplayAds(int value)
+        public void DisplayAds(TypeBooster type)
         {
-            if (value <= 0 )
+            if (type == typeBooster)
             {
                 coin.SetActive(false);
                 redValue.SetActive(false);
