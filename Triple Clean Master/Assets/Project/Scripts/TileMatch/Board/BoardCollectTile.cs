@@ -149,6 +149,7 @@ namespace Project.Scripts.TileMatch.Board
             if (TileManager.Instance.IsLastThreeTile())
             {
                 yield return StartCoroutine(LastThreeAnimation(tileMatch));
+                AudioManager.Instance.PlaySfx(AudioConstants.Clear);
                 _collectedTile.Clear();
                 _originalTile.Clear();
                 foreach (var tile in tileMatch)
@@ -160,16 +161,9 @@ namespace Project.Scripts.TileMatch.Board
             }
             else
             {
+                yield return StartCoroutine(SequentialClearAnimation(tileMatch));
                 foreach (var tile in tileMatch)
                 {
-                    int effectIndex = slots.IndexOf(tile.transform.parent);
-                    yield return DOTween.Sequence().Join(tile.transform.DOScale(tile.transform.localScale, 0.05f)).SetEase(Ease.OutBack).WaitForCompletion();
-                    yield return DOTween.Sequence().Join(tile.transform.DOScale(0.001f, 0.1f)).WaitForCompletion();
-                    if (effectIndex >= 0)
-                    {
-                       StartCoroutine(EffectManager.PlayEffectAndWait(clearEffect, effectIndex)) ;
-                    }
-                    yield return new WaitForSeconds(0.05f);
                     _collectedTile.Remove(tile);
                     _originalTile.Remove(tile);
                     TileManager.Instance.DecreaseTileIndex();
@@ -178,7 +172,6 @@ namespace Project.Scripts.TileMatch.Board
                 }
             }
 
-            AudioManager.Instance.PlaySfx(AudioConstants.Clear);
 
             ReArrangeBoard();
 
@@ -195,7 +188,56 @@ namespace Project.Scripts.TileMatch.Board
             }
         }
 
-      
+        // Thời gian hiệu ứng clear thường (giữ kiểu cũ: từng tile thu nhỏ tại chỗ, lần lượt trái -> phải)
+        private const float ClearPopTime = 0.08f;     // nảy nhẹ trước khi thu nhỏ
+        private const float ClearShrinkTime = 0.14f;  // thu nhỏ về 0
+        private const float ClearStagger = 0.07f;     // độ trễ giữa các tile (chồng lên nhau cho liền mạch)
+        private const float ClearPopScale = 1.12f;
+        private readonly HashSet<Tile> _mergingTiles = new();
+
+        // Cả 3 tile nằm trong 1 Sequence, lệch nhau một chút thay vì chờ từng cái xong mới tới cái sau
+        // -> vẫn là hiệu ứng lần lượt như cũ nhưng không bị khựng giữa các tile.
+        private IEnumerator SequentialClearAnimation(List<Tile> tiles)
+        {
+            Sequence seq = DOTween.Sequence();
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                Tile tile = tiles[i];
+                _mergingTiles.Add(tile);
+                tile.transform.DOKill();
+
+                float start = i * ClearStagger;
+                Vector3 baseScale = Vector3.one;
+                Vector3 slotPos = tile.transform.parent != null ? tile.transform.parent.position : tile.transform.position;
+                int effectIndex = slots.IndexOf(tile.transform.parent);
+
+                // Đưa tile về đúng tâm slot trong lúc nảy (phòng khi tween sắp xếp lại bị ngắt giữa chừng)
+                seq.Insert(start, tile.transform.DOMove(slotPos, ClearPopTime).SetEase(Ease.OutQuad));
+                seq.Insert(start, tile.transform.DOScale(baseScale * ClearPopScale, ClearPopTime).SetEase(Ease.OutQuad));
+                seq.Insert(start + ClearPopTime,
+                    tile.transform.DOScale(0f, ClearShrinkTime).SetEase(Ease.InBack, 1.5f));
+
+                // Particle bật ngay trước khi tile biến mất hẳn để nối liền mạch
+                bool isFirst = i == 0;
+                seq.InsertCallback(start + ClearPopTime + ClearShrinkTime * 0.7f, () =>
+                {
+                    if (effectIndex >= 0)
+                    {
+                        StartCoroutine(EffectManager.PlayEffectAndWait(clearEffect, effectIndex));
+                    }
+                    if (isFirst)
+                    {
+                        AudioManager.Instance.PlaySfx(AudioConstants.Clear);
+                    }
+                });
+            }
+
+            yield return seq.WaitForCompletion();
+            foreach (var tile in tiles)
+            {
+                _mergingTiles.Remove(tile);
+            }
+        }
 
         private IEnumerator LastThreeAnimation(List<Tile> tiles)
         {
@@ -238,14 +280,15 @@ namespace Project.Scripts.TileMatch.Board
 
         private void ReArrangeBoard()
         {
+            DOTween.Kill("collect");
             for (int i = 0; i < _collectedTile.Count; i++)
             {
                 var tile = _collectedTile[i];
                 tile.transform.parent = slots[i];
-                DOTween.Kill("collect");
-                tile.transform.DOMove(slots[i].position, 0.4f);
-                tile.transform.DOScale(1, 0.1f);
-
+                // Tile đang chạy hiệu ứng clear thì không kéo về slot / scale lại, tránh giật
+                if (_mergingTiles.Contains(tile)) continue;
+                tile.transform.DOMove(slots[i].position, 0.25f).SetEase(Ease.OutCubic);
+                tile.transform.DOScale(1, 0.15f).SetEase(Ease.OutQuad);
             }
         }
 
@@ -300,6 +343,7 @@ namespace Project.Scripts.TileMatch.Board
             _collectedTile.Clear();
             _originalTile.Clear();
             _clearQueue.Clear();
+            _mergingTiles.Clear();
             _isClearing = false;
             IsMatching = false;
             PlayScreen.IsClick = false;
