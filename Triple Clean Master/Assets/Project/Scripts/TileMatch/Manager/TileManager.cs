@@ -446,7 +446,7 @@ namespace Project.Scripts.TileMatch.Manager
             }
         }
 
-        public void ShuffleGridTiles()
+        public void ShuffleGridTiles(System.Action onComplete = null)
         {
             IsCompleteShuffle = true;
             List<Tile> remainingTile = new();
@@ -495,8 +495,14 @@ namespace Project.Scripts.TileMatch.Manager
             foreach (var tile in remainingTile)
             {
                 seq.Join(tile.transform.DOMove(originalPos[tile], 0.35f).SetEase(Ease.OutBack));
-                seq.Join(tile.transform.DOScale(Util.SetScale(), 0.35f).OnComplete((() => DOVirtual.DelayedCall(0.3f,() =>IsCompleteShuffle = false))));
+                seq.Join(tile.transform.DOScale(Util.SetScale(), 0.35f));
             }
+            // Gọi 1 lần khi toàn bộ shuffle xong (trước đây mỗi tile tạo 1 DelayedCall riêng)
+            seq.OnComplete(() =>
+            {
+                DOVirtual.DelayedCall(0.3f, () => IsCompleteShuffle = false);
+                onComplete?.Invoke();
+            });
         }
 
         private Vector3 GetGridCenter()

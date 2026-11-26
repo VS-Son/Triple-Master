@@ -30,8 +30,8 @@ namespace Project.Scripts.UI.Screen
         public void OnRevive()
         {
             AudioManager.Instance.PlaySfx(AudioConstants.HighPitchDefault);
+            // UndoTile tự khóa input và mở lại sau khi tile bay về + shuffle xong
             BoardCollectTile.Instance.UndoTile(5);
-            TileManager.Instance.DisableInput(true);
             StatusBar.Source = ShopOpenSource.Gameplay;
             Close();
             SetScale();

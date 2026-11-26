@@ -27,35 +27,29 @@ namespace Project.Scripts.UI.Screen
             tileIndex.transform.localScale = new Vector3(0, 0);
          }
          btPlay.localScale = Vector3.zero;
-         StartCoroutine(ScaleTilesSequentially());
+         PlayIntro();
          UpdayeTextLevel();
       }
 
-      IEnumerator ScaleTilesSequentially(int index = 0)
+      // Dùng 1 Sequence thay cho coroutine: tween không phụ thuộc GameObject active,
+      // nên khi chuyển sang Shop/screen khác giữa chừng, animation vẫn chạy tiếp, không bị đứng.
+      private Sequence _introSequence;
+
+      private void PlayIntro()
       {
-         if (index >= logoTiles.Count)
+         _introSequence?.Kill();
+         _introSequence = DOTween.Sequence();
+         foreach (var tile in logoTiles)
          {
-            StartCoroutine(OnBanner());
-            yield break;
+            _introSequence.Append(tile.DOScale(new Vector3(1.23f, 1.23f), 0.25f));
          }
-
-         var tile = logoTiles[index];
-         tile.DOScale(new Vector3(1.23f, 1.23f), 0.25f)
-            .OnComplete(() => { StartCoroutine(ScaleTilesSequentially(index + 1)); });
-
-         yield return null;
+         _introSequence.Append(bannerExplorer.DOFillAmount(1f, 1.5f).SetEase(Ease.Linear));
+         _introSequence.Append(btPlay.DOScale(1, 0.4f));
       }
-      IEnumerator OnBanner()
+
+      private void OnDestroy()
       {
-         var duration = 0.005f;
-         while (bannerExplorer.fillAmount < 1f)
-         {
-            bannerExplorer.fillAmount += 0.01f;
-            float clampedTime = Mathf.Clamp01(bannerExplorer.fillAmount);
-            bannerExplorer.fillAmount = clampedTime;
-            yield return new WaitForSeconds(duration);
-         }
-         btPlay.DOScale(1, 0.4f);
+         _introSequence?.Kill();
       }
       public void OnPlay()
       {

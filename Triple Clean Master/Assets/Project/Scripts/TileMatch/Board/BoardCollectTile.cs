@@ -252,25 +252,31 @@ namespace Project.Scripts.TileMatch.Board
         public void UndoTile(int quantity)
         {
             int count = Math.Min(quantity, _originalTile.Count);
+            bool isRevive = quantity > 1;
+
+            // Gom toàn bộ tween undo vào 1 Sequence để biết chính xác khi nào tất cả đã xong
+            Sequence undoSeq = DOTween.Sequence();
             for (int i = 0; i < count; i++)
             {
                 int index = _originalTile.Count - 1 - i;
                 Tile tile = _originalTile[index];
-                tile.transform.DOLocalMove(tile.originalPos, 0.4f).SetEase(Ease.Flash).OnComplete((() =>
-                {
-                    if (quantity > 1 && i >= count)
-                    {
-                        DOVirtual.DelayedCall(0.1f, () => TileManager.Instance.ShuffleGridTiles());
-                    }
-
-                }));
-                tile.transform.DOScale(_originalScale, 0.6f);
+                tile.transform.DOKill();
+                tile.transform.localRotation = Quaternion.identity;
                 _collectedTile.Remove(tile);
                 tile.SetDataUndo();
-                TileManager.Instance.InitCoverageCount();
+                undoSeq.Join(tile.transform.DOLocalMove(tile.originalPos, 0.4f).SetEase(Ease.Flash));
+                undoSeq.Join(tile.transform.DOScale(_originalScale, 0.4f));
             }
+            TileManager.Instance.InitCoverageCount();
 
-            
+            if (isRevive)
+            {
+                // Revive: khóa click cho tới khi tile bay về + shuffle xong, chỉ shuffle 1 lần
+                TileManager.Instance.DisableInput(false);
+                undoSeq.OnComplete(() =>
+                    DOVirtual.DelayedCall(0.1f, () =>
+                        TileManager.Instance.ShuffleGridTiles(() => TileManager.Instance.DisableInput(true))));
+            }
 
             _originalTile.RemoveRange(_originalTile.Count - count, count);
             _countSlot -= count;
