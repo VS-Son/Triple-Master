@@ -3,6 +3,7 @@ using EnhancedUI.EnhancedScroller;
 using Project.Scripts.IAP_shop.ShopData;
 using Project.Scripts.Manager;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
@@ -15,8 +16,18 @@ namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
         public Image iconAds;
         public TMP_Text priceText;
         public bool isPurchased;
-        private RemoveAdsData _data; 
+        private RemoveAdsData _data;
         public Action<IShopCellView> Onclick { get; set; }
+
+        [Header("Purchase button")]
+        [SerializeField] private Image purchaseButton;
+        [SerializeField] private Sprite purchasedButtonSprite;
+        private Sprite _normalButtonSprite;
+
+        private void Awake()
+        {
+            if (purchaseButton != null) _normalButtonSprite = purchaseButton.sprite;
+        }
         public void OnClickPurchase()
         {
             Onclick.Invoke(this);
@@ -47,6 +58,7 @@ namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
                 iconAds.sprite = data.icon;
                 isPurchased = data.isPurchase;
                 priceText.text =!isPurchased? $"{data.price:N0}₫" : "Purchased";
+                PurchaseButtonState.Apply(purchaseButton, priceText, _normalButtonSprite, purchasedButtonSprite, isPurchased);
 
             }
         }

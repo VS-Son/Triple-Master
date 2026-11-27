@@ -1,0 +1,37 @@
+{
+  "folder": "Assets/Project/Art/Generated/Boosters",
+  "style": "Exactly the same art style, colors, glossy shading and outline as the reference image. Single isolated icon, centered, fully transparent background, no circle, no ring, no badge, no backdrop, no shadow floor, no text.",
+  "overwrite": true,
+  "items": [
+    {
+      "name": "booster_undo",
+      "preset": "Icon",
+      "prompt": "Only the glossy purple curved undo arrow from Image 1 (pointing left), extracted on its own without the white circle and lavender ring around it. Keep its exact shape, purple colors and highlights.",
+      "size": "1024x1024",
+      "background": "transparent",
+      "references": ["Assets/Project/Art/Generated/ShopV2/icon_undo.png"],
+      "prefab": "Assets/Resources/UI/Screen/Play Screen.prefab",
+      "target": "foot/Booster/Undo/Circle Click/item"
+    },
+    {
+      "name": "booster_magic_wand",
+      "preset": "Icon",
+      "prompt": "Only the magic wand from Image 1 - blue handle with gold tip topped by a glossy yellow star - extracted on its own without the white circle and lavender ring around it. Keep its exact shape, angle, colors and highlights.",
+      "size": "1024x1024",
+      "background": "transparent",
+      "references": ["Assets/Project/Art/Generated/ShopV2/icon_magic_wand.png"],
+      "prefab": "Assets/Resources/UI/Screen/Play Screen.prefab",
+      "target": "foot/Booster/Magic Wand/Circle Click/item"
+    },
+    {
+      "name": "booster_shuffle",
+      "preset": "Icon",
+      "prompt": "Only the two glossy curved swap arrows from Image 1 - one pink-magenta, one blue - extracted on their own without the white circle and lavender ring around them. Keep their exact shape, colors and highlights.",
+      "size": "1024x1024",
+      "background": "transparent",
+      "references": ["Assets/Project/Art/Generated/ShopV2/icon_shuffle.png"],
+      "prefab": "Assets/Resources/UI/Screen/Play Screen.prefab",
+      "target": "foot/Booster/Shuffle/Circle Click/item"
+    }
+  ]
+}

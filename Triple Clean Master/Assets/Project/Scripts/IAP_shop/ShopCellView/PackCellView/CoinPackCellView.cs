@@ -1,8 +1,11 @@
 using System;
 using EnhancedUI.EnhancedScroller;
 using Project.Scripts.IAP_shop.ShopData;
+using Project.Scripts.Constants;
 using Project.Scripts.Manager;
+using Project.Scripts.Message;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
@@ -23,25 +26,43 @@ namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
             Onclick.Invoke(this);
         }
 
+        private const string FreeClaimedKeyPrefix = "ShopFreeClaimed_";
+
+        // A Free pack is free only the first time (saved across app restarts); after that it needs a rewarded ad
+        private static bool IsFreeClaimed(CoinPackData data) => PlayerPrefs.GetInt(FreeClaimedKeyPrefix + data.id, 0) == 1;
+
+        private static void MarkFreeClaimed(CoinPackData data)
+        {
+            PlayerPrefs.SetInt(FreeClaimedKeyPrefix + data.id, 1);
+            PlayerPrefs.Save();
+        }
+
+        private static bool NeedsAd(CoinPackData data)
+        {
+            return data.offerType == OfferType.Ads || (data.offerType == OfferType.Free && IsFreeClaimed(data));
+        }
+
         public void OnPurchasing(ShopItemDataBase database)
         {
-            if (database is CoinPackData coinPackData)
+            if (database is not CoinPackData coinPackData || !id.Equals(coinPackData.id)) return;
+
+            switch (coinPackData.offerType)
             {
-                if (!id.Equals(coinPackData.id)) return;
-                if(!isPurchased)
-                {
-                    if (coinPackData.offerType == OfferType.Free || coinPackData.offerType == OfferType.Ads)
-                    {
-                        isPurchased = true;
-                        PlayerInventoryManager.AddCoin(coinPackData.coin);
-                        coinPackData.isPurchase = isPurchased;
-                    }
-                }
-                if (coinPackData.offerType == OfferType.Buy)
-                {
+                case OfferType.Buy:
                     PlayerInventoryManager.AddCoin(coinPackData.coin);
-                }
-                
+                    break;
+
+                case OfferType.Free when !IsFreeClaimed(coinPackData):
+                    MarkFreeClaimed(coinPackData);
+                    PlayerInventoryManager.AddCoin(coinPackData.coin);
+                    UpdatePriceText();
+                    break;
+
+                default:
+                    AdsManager.ShowRewarded(
+                        onRewarded: () => PlayerInventoryManager.AddCoin(coinPackData.coin),
+                        onFailed: () => ToastMessage.ShowMessage(MessageConstants.MessageAdsNotReady));
+                    break;
             }
         }
 
@@ -54,9 +75,16 @@ namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
                 iconCoin.sprite = data.icon;
                 textAmountCoin.text = $"{data.coin}";
                 offerType = data.offerType;
-                priceText.text =offerType == OfferType.Buy?$"{data.price:N0}₫": "FREE!";
                 isPurchased = data.isPurchase;
+                UpdatePriceText();
             }
+        }
+
+        private void UpdatePriceText()
+        {
+            if (_data == null) return;
+            if (_data.offerType == OfferType.Buy) priceText.text = $"{_data.price:N0}₫";
+            else priceText.text = NeedsAd(_data) ? "Watch Ad" : "FREE!";
         }
 
         public ShopItemDataBase Data()

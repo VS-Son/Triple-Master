@@ -29,6 +29,16 @@ namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
         public bool isPurchased;
         private PackageData _data;
 
+        [Header("Purchase button")]
+        [SerializeField] private Image purchaseButton;
+        [SerializeField] private Sprite purchasedButtonSprite;
+        private Sprite _normalButtonSprite;
+
+        private void Awake()
+        {
+            if (purchaseButton != null) _normalButtonSprite = purchaseButton.sprite;
+        }
+
        
         public void OnClickPurchase()
         {
@@ -66,6 +76,7 @@ namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
                 }
                 isPurchased = data.isPurchase;
                 priceText.text = !isPurchased ? $"{data.price:N0}₫" : "Purchased";
+                PurchaseButtonState.Apply(purchaseButton, priceText, _normalButtonSprite, purchasedButtonSprite, isPurchased);
                 iconCoin.sprite = data.icon;
                 textCoinAmount.text = $"{data.coin}";
 

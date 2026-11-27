@@ -17,11 +17,31 @@ namespace Project.Scripts.Scroller
         private readonly Dictionary<ShopItemType, EnhancedScrollerCellView> _itemDict = new();
         private List<ShopItemDataBase> _allItems = new ();
         private List<ShopItemDataBase> _allItemsOriginal = new();
+        private const string PurchasedKeyPrefix = "ShopPurchased_";
+
         [ContextMenu(nameof(RefundPurchased))]
         private void Start()
         {
-            UpdatePurchasedNonConsumable();
             OnInit();
+            // Sort after the data is loaded so already-bought packs start at the bottom of the list
+            UpdatePurchasedNonConsumable();
+        }
+
+        // The ScriptableObject is not saved on device, so the purchased state lives in PlayerPrefs per item id
+        private static string PurchasedKey(ShopItemDataBase item) => PurchasedKeyPrefix + item.id;
+
+        private static void LoadPurchasedState(IEnumerable<ShopItemDataBase> items)
+        {
+            foreach (var item in items)
+            {
+                item.isPurchase = PlayerPrefs.GetInt(PurchasedKey(item), 0) == 1;
+            }
+        }
+
+        private static void SavePurchasedState(ShopItemDataBase item)
+        {
+            PlayerPrefs.SetInt(PurchasedKey(item), item.isPurchase ? 1 : 0);
+            PlayerPrefs.Save();
         }
 
         private void OnInit()
@@ -36,6 +56,7 @@ namespace Project.Scripts.Scroller
                 
             }
             _allItems = shopDataConfig.GetRangData();
+            LoadPurchasedState(_allItems);
             _allItemsOriginal = new List<ShopItemDataBase>(_allItems);
             scroller.ReloadData();
 
@@ -113,8 +134,8 @@ namespace Project.Scripts.Scroller
 
             if (data is {PurchaseType: PurchaseType.NonConsumable})
             {
+                SavePurchasedState(data);
                 UpdatePurchasedNonConsumable();
-
             }
         }
 
@@ -131,6 +152,7 @@ namespace Project.Scripts.Scroller
             foreach (var item in _allItems)
             {
                 item.isPurchase = false;
+                SavePurchasedState(item);
             }
 
             _allItems = new List<ShopItemDataBase>(_allItemsOriginal);
