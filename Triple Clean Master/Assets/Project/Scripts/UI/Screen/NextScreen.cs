@@ -8,6 +8,7 @@ using Project.Scripts.TileMatch.Board;
 using Project.Scripts.TileMatch.Manager;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Project.Scripts.UI.Screen
@@ -21,57 +22,57 @@ namespace Project.Scripts.UI.Screen
         [SerializeField] private Animator animGift;
         [SerializeField] private Image iconGift;
         [SerializeField] private int amountReward;
-        [SerializeField] private int countProgression;
-        private const string ProgressionKey = "CountProgression";
+        [SerializeField] private int giftProgression;
+        private const string ProgressionKey = "giftProgression";
         public static event Action<int> GetCoin;
         private static int NextLevel => GameplayManager.CurrentLevel + 1;
 
         public static Action<bool> OnActiveStatus;
         public static Action UpdateLevelText;
 
-        private void Awake()
+        private void Awake()    
         {
             LoadCountProgression();
         }
 
+        private static readonly Vector3 BtNextShowScale = Vector3.one;
+
         private void OnEnable()
         {
+            //LoadCountProgression();
+            HideNextButton(false);
             textNext.text = "Level " + ( GameplayManager.CurrentLevel + 1);
             OnActiveStatus?.Invoke(false);
-            
-            if (countProgression <= 0)
+
+            if (giftProgression <= 0)
             {
                 progressionFill.gameObject.SetActive(true);
                 iconGift.gameObject.SetActive(true);
-                
+
             }
-            UpdateProvenceReward();
+            ProgressionFill();
             CoinEffect.OnCompleteGoal += OnCompleteGoal;
 
-            
+
         }
 
         private void OnDisable()
         {
             CoinEffect.OnCompleteGoal -= OnCompleteGoal;
-            if (countProgression >= 4)
+            if (giftProgression >= 4)
             {
-                countProgression = 0;
+                giftProgression = 0;
             }
-            
-        }
 
-        private void UpdateProvenceReward()
-        {
-            ProgressionFill();
         }
+        
 
         private void ProgressionFill()
         {
-            progressionFill.value = countProgression/4f;
-            countProgression = Mathf.Min(countProgression + 1, 4);
+            progressionFill.value = giftProgression/4f;
+            giftProgression = Mathf.Min(giftProgression + 1, 4);
             SaveCountProgression();
-            textProgression.text = $"Provence {countProgression}/4";
+            textProgression.text = $"Provence {giftProgression}/4";
             var amountValue = progressionFill.maxValue / 4f;
             var targetValue = Mathf.Min(progressionFill.value + amountValue, progressionFill.maxValue);
             StartCoroutine(IncreaseProgressionFill(progressionFill.value,targetValue, 0.3f ));
@@ -89,29 +90,47 @@ namespace Project.Scripts.UI.Screen
                 yield return null;
             }
             progressionFill.value = to;
-            if (countProgression <= 3)
+            if (giftProgression <= 3)
             {
                 OnCompleteGoal();
             }
             if (to >= progressionFill.maxValue)
             {
+                HideNextButton(true);
                 animGift.gameObject.SetActive(true);
                 progressionFill.gameObject.SetActive(false);
                 animGift.enabled = true;
                 iconGift.gameObject.SetActive(false);
                 StartCoroutine(OpenRewardGift());
-                progressionFill.value = 0.5f; 
-                countProgression = 0;
-                textProgression.text = $"Provence {countProgression}/4";
-                
+                progressionFill.value = 0.5f;
+                giftProgression = 0;
+                textProgression.text = $"Provence {giftProgression}/4";
+
             }
         }
+        private bool _canClickNext;
+
+        private void HideNextButton(bool animate)
+        {
+            btNext.transform.DOKill();
+            _canClickNext = false;
+            if (animate)
+            {
+                btNext.transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack);
+            }
+            else
+            {
+                btNext.transform.localScale = Vector3.zero;
+            }
+        }
+
         private void OnCompleteGoal()
         {
-           
-            btNext.transform.DOScale(1, 0.6f).OnComplete(()=>
+            btNext.transform.DOKill();
+            btNext.transform.DOScale(BtNextShowScale, 0.6f).SetEase(Ease.OutBack).OnComplete(() =>
             {
                 btNext.enabled = true;
+                _canClickNext = true;
             });
         }
 
@@ -129,11 +148,13 @@ namespace Project.Scripts.UI.Screen
 
         public void OnNext()
         {
+            if (!_canClickNext) return;
+            _canClickNext = false;
             AudioManager.Instance.PlaySfx(AudioConstants.HighPitchDefault);
             TileManager.ZoomScaleTile();
-            if (countProgression >= 4)
+            if (giftProgression >= 4)
             {
-                countProgression = 0;
+                giftProgression = 0;
             }
             TileManager.Instance.NextLevel();
             BoardCollectTile.Instance.ResetBoard();
@@ -145,12 +166,12 @@ namespace Project.Scripts.UI.Screen
 
         private void LoadCountProgression()
         {
-            countProgression = PlayerPrefs.GetInt(ProgressionKey, countProgression);
+            giftProgression = PlayerPrefs.GetInt(ProgressionKey);
         }
 
         private void SaveCountProgression()
         {
-            PlayerPrefs.SetInt(ProgressionKey, countProgression);
+            PlayerPrefs.SetInt(ProgressionKey, giftProgression);
             PlayerPrefs.Save();
         }
     }

@@ -1,0 +1,23 @@
+{
+  "folder": "Assets/Project/Art/Generated/Shop/Mockups",
+  "style": "Exactly the same art style as the reference images from this game (Triple Master): glossy casual mobile puzzle UI, chunky rounded cartoon shapes, thick soft outlines, bright saturated colors, wooden signs with lush green leaves and small white daisies, cream and light lavender panels with rounded borders, glossy pill buttons in green, blue and orange, big bold rounded white text with colored outlines.",
+  "overwrite": false,
+  "references": [
+    "AIReferences/style/game_background.png",
+    "AIReferences/style/Loading_Screen.png",
+    "AIReferences/style/Popup_Revive.png",
+    "AIReferences/style/Popup_Setting.png",
+    "AIReferences/style/Home_Screen.png",
+    "AIReferences/style/Status_Bar.png",
+    "AIReferences/style/splash.png"
+  ],
+  "items": [
+    {
+      "name": "shop_mockup",
+      "preset": "Custom",
+      "size": "1024x1536",
+      "background": "opaque",
+      "prompt": "Design a complete, polished in-game SHOP screen for this mobile puzzle game, portrait phone layout, as a finished UI mockup screenshot. Use the game's dark wooden plank background framed by green foliage (Image 1). Layout from top to bottom: (1) Header: a round back-arrow button on the left, a wooden title sign with green leaves and daisies reading 'SHOP' in the same chunky orange-cream lettering style as the game logo, and on the right a coin counter pill with a gold coin icon, the number 130 and a small green plus button. (2) A 'Daily Reward' card: red gift box icon, title 'Daily Reward', subtitle 'Free coins every 4 hours', '+10' coins, and a glossy green 'Claim' button. (3) Four bundle cards stacked vertically, each a rounded cream panel: left side a pile of gold coins with the coin amount in big bold text (100, 300, 600, 1500 coins), middle three small rounded tiles showing the game's booster icons - undo arrow, magic wand, shuffle arrows - each with a count like x3, right side a glossy green price button ($0.99, $2.99, $4.99, $9.99). Card names on a small ribbon label: 'Starter Pack', 'Bundle Pack' with a 'POPULAR' blue ribbon, 'Super Pack', 'Mega Pack' with a 'BEST VALUE' red ribbon and a golden glowing highlighted card with a treasure chest of coins. (4) A 'Remove Ads' card with a crossed-out AD icon and a blue price button. Keep consistent spacing, clear hierarchy, readable text, everything inside the safe area, nothing cut off."
+    }
+  ]
+}

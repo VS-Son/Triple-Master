@@ -1,0 +1,82 @@
+{
+  "folder": "Assets/Project/Art/Generated/Shop",
+  "style": "Cozy nature-themed casual mobile puzzle game UI art, warm brown wooden textures, cream beige parchment panels with soft inner shading, small fresh green leaf accents, glossy saturated colors, thick soft dark-brown outlines, cartoon style, clean edges, high quality game asset, no text, no letters, no numbers.",
+  "quality": "low",
+  "overwrite": true,
+  "items": [
+    {
+      "name": "shop_bg",
+      "preset": "Background",
+      "prompt": "Vertical wall of warm dark-brown wooden planks running top to bottom, lush green leaves peeking in from the four corners, a few small white daisies and smooth grey stones in the bottom corners.",
+      "size": "1024x1536",
+      "background": "opaque",
+      "prefab": "Assets/Resources/UI/Screen/Shop Screen.prefab",
+      "target": "bg"
+    },
+    {
+      "name": "shop_pack_panel",
+      "preset": "PopupPanel",
+      "prompt": "Wide horizontal rounded-rectangle card, cream beige parchment fill, light golden-brown thick rim with soft bevel, two small green leaf sprigs on the top-left and top-right corners, plain empty interior.",
+      "size": "1536x1024",
+      "background": "transparent",
+      "prefab": "Assets/Project/Prefab/IAP Shop/Package/Package.prefab",
+      "target": "backgound",
+      "slice": 0.28
+    },
+    {
+      "name": "shop_bt_buy",
+      "preset": "Button",
+      "prompt": "Wide glossy rounded-rectangle green button, bright lime-green top with a white glossy highlight, darker green bottom lip for a 3D pressed look, thin dark-green outline, empty face with no symbol.",
+      "size": "1536x1024",
+      "background": "transparent",
+      "prefab": "Assets/Project/Prefab/IAP Shop/Package/Package.prefab",
+      "target": "backgound/footer/bt_purchase",
+      "slice": 0.45
+    },
+    {
+      "name": "shop_icon_undo",
+      "preset": "Icon",
+      "prompt": "Small rounded square tile in light cream with a soft lavender-grey border, containing a bright glossy blue circular undo arrow in the upper part, leave the bottom quarter of the tile empty.",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prefab": "Assets/Project/Prefab/IAP Shop/Package/Package.prefab",
+      "target": "backgound/top/lable_booster/booster/undo"
+    },
+    {
+      "name": "shop_icon_magic_wand",
+      "preset": "Icon",
+      "prompt": "Small rounded square tile in light cream with a soft lavender-grey border, containing a glossy golden magic wand topped with a yellow star and tiny sparkles in the upper part, leave the bottom quarter of the tile empty.",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prefab": "Assets/Project/Prefab/IAP Shop/Package/Package.prefab",
+      "target": "backgound/top/lable_booster/booster/magic wand"
+    },
+    {
+      "name": "shop_icon_shuffle",
+      "preset": "Icon",
+      "prompt": "Small rounded square tile in light cream with a soft lavender-grey border, containing two glossy bright green crossing shuffle arrows in the upper part, leave the bottom quarter of the tile empty.",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prefab": "Assets/Project/Prefab/IAP Shop/Package/Package.prefab",
+      "target": "backgound/top/lable_booster/booster/shuffle"
+    },
+    {
+      "name": "shop_coin_stack_large",
+      "preset": "Icon",
+      "prompt": "Pile of five shiny gold coins, each coin embossed with a cute paw print, three coins stacked and two leaning in front.",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prefab": "Assets/Project/Prefab/IAP Shop/Package/Package.prefab",
+      "target": "backgound/top/curency/coin"
+    },
+    {
+      "name": "shop_coin_stack_small",
+      "preset": "Icon",
+      "prompt": "Two shiny gold coins slightly overlapping, each embossed with a cute paw print.",
+      "size": "1024x1024",
+      "background": "transparent",
+      "prefab": "Assets/Project/Prefab/IAP Shop/Coin Pack/Coin Pack.prefab",
+      "target": "curency/coin"
+    }
+  ]
+}

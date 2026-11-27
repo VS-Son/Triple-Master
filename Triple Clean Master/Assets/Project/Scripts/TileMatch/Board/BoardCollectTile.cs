@@ -75,6 +75,9 @@ namespace Project.Scripts.TileMatch.Board
 
         public bool IsFull => _collectedTile.Count >= MaxBoardSlots;
 
+        // A match is waiting to be cleared or is clearing right now (disabling the board would stop it mid-way)
+        public static bool IsBusy => IsMatching || (Instance != null && Instance.HasPendingClear());
+
         private bool HasPendingClear()
         {
             if (_isClearing || _clearQueue.Count > 0) return true;

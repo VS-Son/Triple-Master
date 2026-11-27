@@ -1,0 +1,137 @@
+{
+  "folder": "Assets/Project/Art/Generated/ShopV2",
+  "style": "Match Image 1 (the approved Store design) exactly: same glossy casual mobile puzzle style, chunky rounded shapes, soft bevels, warm cream and gold palette, thick soft outlines, clean edges. Produce a single isolated game UI asset, centered, nothing else in the frame.",
+  "overwrite": true,
+  "references": [
+    "AIReferences/store_design.png",
+    "AIReferences/screens/01_home.png"
+  ],
+  "items": [
+    {
+      "name": "store_sign",
+      "preset": "Custom",
+      "prompt": "The wooden 'Store' title sign from Image 1: a rounded warm-brown wooden plank sign with green leaves on both sides, with the word 'Store' in big bold white rounded letters with a dark brown outline. Exactly that sign only.",
+      "size": "1536x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "bt_close",
+      "preset": "Icon",
+      "prompt": "The round close button from the top-right of Image 1: a circular wooden-brown button with a light rim and a bold white X in the middle.",
+      "size": "1024x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "card_starter",
+      "preset": "Custom",
+      "prompt": "The 'Starter Pack' card frame from Image 1 with all content removed: a wide rounded rectangle card with a glossy golden-yellow rim; the top 65 percent is a plain light cream inner panel, the bottom 35 percent is a warm golden-yellow band. No coins, no icons, no text, no ribbon. Wide landscape shape about 2.6 times wider than tall.",
+      "size": "1536x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "card_bundle",
+      "preset": "Custom",
+      "prompt": "The 'Bundle Pack' card frame from Image 1 with all content removed: a wide rounded rectangle card with a soft light peach-cream rim; the top 65 percent is a plain light cream inner panel, the bottom 35 percent is a pale peach band. No coins, no icons, no text. Wide landscape shape about 2.6 times wider than tall.",
+      "size": "1536x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "card_super",
+      "preset": "Custom",
+      "prompt": "The 'Super Pack' card frame from Image 1 with all content removed: a wide rounded rectangle card with a warm peach rim; the top 65 percent is a plain light cream inner panel, the bottom 35 percent is a soft salmon-peach band. No coins, no icons, no text. Wide landscape shape about 2.6 times wider than tall.",
+      "size": "1536x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "card_legendary",
+      "preset": "Custom",
+      "prompt": "The 'Legendary Pack' card frame from Image 1 with all content removed: a wide rounded rectangle card with a glossy lilac-purple rim; the top 65 percent is a plain light cream inner panel, the bottom 35 percent is a soft lavender-purple band with a few tiny golden sparkles near its left and right ends. No coins, no icons, no text. Wide landscape shape about 2.6 times wider than tall.",
+      "size": "1536x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "card_plain",
+      "preset": "Custom",
+      "prompt": "The free-coins row card from the top of Image 1 with all content removed: a wide rounded rectangle with a light cream fill and a soft cream-beige rim with gentle bevel. No coins, no text, no button. Wide landscape shape about 4 times wider than tall.",
+      "size": "1536x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "booster_tray",
+      "preset": "Custom",
+      "prompt": "The empty rounded inset tray that holds the three booster icons in the cards of Image 1: a wide rounded rectangle, soft beige-tan fill, subtle inner shadow, no icons. Wide landscape shape about 3.5 times wider than tall.",
+      "size": "1536x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "bt_green",
+      "preset": "Button",
+      "prompt": "The green price button from Image 1 with no text: a wide rounded rectangle, glossy bright green with a lighter top highlight, darker green bottom edge and a thin dark green outline.",
+      "size": "1536x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "ribbon_popular",
+      "preset": "Custom",
+      "prompt": "The red diagonal corner ribbon from the top-left corner of the Starter Pack card in Image 1, reading 'Popular' in white bold letters, running from lower-left to upper-right at about 40 degrees, with folded ends. Only the ribbon.",
+      "size": "1024x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "icon_undo",
+      "preset": "Icon",
+      "prompt": "The round undo booster icon from Image 1: a white circle with a thin lavender ring containing a glossy purple curved arrow pointing left.",
+      "size": "1024x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "icon_magic_wand",
+      "preset": "Icon",
+      "prompt": "The round magic wand booster icon from Image 1: a white circle with a thin lavender ring containing a blue wand topped with a glossy yellow star.",
+      "size": "1024x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "icon_shuffle",
+      "preset": "Icon",
+      "prompt": "The round shuffle booster icon from Image 1: a white circle with a thin lavender ring containing two glossy curved arrows, one pink-magenta and one blue, forming a swap loop.",
+      "size": "1024x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "coins_free",
+      "preset": "Icon",
+      "prompt": "The small coin group from the free-coins row of Image 1: three shiny gold paw-print coins (two stacked, one in front) with two small golden sparkles.",
+      "size": "1024x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "coins_starter",
+      "preset": "Icon",
+      "prompt": "The coin pile from the Starter Pack card in Image 1: a small stack of about six shiny gold paw-print coins with two coins leaning in front.",
+      "size": "1024x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "coins_bundle",
+      "preset": "Icon",
+      "prompt": "The coin pile from the Bundle Pack card in Image 1: a medium heap of about ten shiny gold paw-print coins in two short stacks with loose coins in front.",
+      "size": "1024x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "coins_super",
+      "preset": "Icon",
+      "prompt": "The coin pile from the Super Pack card in Image 1: a large heap of shiny gold paw-print coins, one tall stack in the middle with lower stacks and loose coins around it.",
+      "size": "1536x1024",
+      "background": "transparent"
+    },
+    {
+      "name": "coins_legendary",
+      "preset": "Icon",
+      "prompt": "The coin pile from the Legendary Pack card in Image 1: a very large wide heap of shiny gold paw-print coins with several tall stacks and many loose coins.",
+      "size": "1536x1024",
+      "background": "transparent"
+    }
+  ]
+}

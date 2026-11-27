@@ -16,6 +16,7 @@ namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
         public string id;
         public TMP_Text textName;
         public Image backgound;
+        public Image ribbon;
         public Image iconCoin;
         public TMP_Text textCoinAmount;
 
@@ -58,6 +59,11 @@ namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
                 id = data.id;
                 textName.text = data.name;
                 backgound.sprite = data.backgound;
+                if (ribbon != null)
+                {
+                    ribbon.gameObject.SetActive(data.ribbon != null);
+                    ribbon.sprite = data.ribbon;
+                }
                 isPurchased = data.isPurchase;
                 priceText.text = !isPurchased ? $"{data.price:N0}₫" : "Purchased";
                 iconCoin.sprite = data.icon;
@@ -73,7 +79,5 @@ namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
         {
             return _data;
         }
-
-       
     }
 }

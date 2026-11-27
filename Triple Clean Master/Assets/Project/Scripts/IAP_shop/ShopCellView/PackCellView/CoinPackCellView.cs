@@ -54,7 +54,7 @@ namespace Project.Scripts.IAP_shop.ShopCellView.PackCellView
                 iconCoin.sprite = data.icon;
                 textAmountCoin.text = $"{data.coin}";
                 offerType = data.offerType;
-                priceText.text =offerType == OfferType.Buy?$"{data.price:N0}₫": "Free";
+                priceText.text =offerType == OfferType.Buy?$"{data.price:N0}₫": "FREE!";
                 isPurchased = data.isPurchase;
             }
         }

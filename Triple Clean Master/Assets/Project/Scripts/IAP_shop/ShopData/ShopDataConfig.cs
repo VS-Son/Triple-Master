@@ -8,6 +8,7 @@ namespace Project.Scripts.IAP_shop.ShopData
     public class PackageData: ShopItemDataBase
     {
         public Sprite backgound;
+        public Sprite ribbon;
         public int undo;
         public int magicWand;
         public int shuffle;
@@ -41,8 +42,9 @@ namespace Project.Scripts.IAP_shop.ShopData
         public List<ShopItemDataBase> GetRangData()
         {
             List<ShopItemDataBase> allItems = new();
+            allItems.AddRange(coinPackCellViews.FindAll(c => c.offerType == OfferType.Free));
             allItems.AddRange(packageCellViews);
-            allItems.AddRange(coinPackCellViews);
+            allItems.AddRange(coinPackCellViews.FindAll(c => c.offerType != OfferType.Free));
             allItems.AddRange(removeAdsCellViews);
             return allItems;
         }

@@ -57,11 +57,11 @@ namespace Project.Scripts.Scroller
             switch (itemData.ItemType)
             {
                 case ShopItemType.Package:
-                    return 346f;
+                    return 320f;
                 case ShopItemType.Coin:
-                    return 112f;
+                    return 136f;
                 case ShopItemType.Ads:
-                    return 180f;
+                    return 150f;
                 default:
                     return 200f;
             }

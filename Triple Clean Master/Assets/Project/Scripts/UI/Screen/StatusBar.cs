@@ -2,9 +2,9 @@ using System;
 using Project.Scripts.Constants;
 using Project.Scripts.Manager;
 using Project.Scripts.Scroller;
+using Project.Scripts.TileMatch.Board;
 using Project.Scripts.UI.Popup;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using Button = UnityEngine.UI.Button;
 
@@ -100,8 +100,10 @@ namespace Project.Scripts.UI.Screen
 
                 case ShopOpenSource.Gameplay:
                     StateUI.ChangeState(ScreenType.PlayScreen);
+                    GameplayManager.SetTileManagerActive(true);
                     UIManager.CloseUI<ShopScreen>(ScreenType.ShopScreen);
                     statusCoin.enabled = true;
+                    textTitle.gameObject.SetActive(true);
                     UpdateLevelText();
                     break;
             }
@@ -109,20 +111,27 @@ namespace Project.Scripts.UI.Screen
 
         public void OnShop()
         {
+            // Opening the Store hides the board, which would stop a clear animation half-way
+            if (StateUI.IsState(ScreenType.PlayScreen) && BoardCollectTile.IsBusy) return;
             AudioManager.Instance.PlaySfx(AudioConstants.HighPitchDefault);
             var source = StateUI.IsState(ScreenType.PlayScreen) ? ShopOpenSource.Gameplay : ShopOpenSource.HomeScreen;
             StateUI.ChangeState(ScreenType.ShopScreen);
+            if (source == ShopOpenSource.Gameplay)
+            {
+                // PlayScreen.OnDisable already hides the 7-slot board; hide the tile layout too so it doesn't show through the Store
+                GameplayManager.SetTileManagerActive(false);
+            }
             setting.SetActive(false);
             back.SetActive(true);
             statusCoin.enabled = false;
-            textTitle.gameObject.SetActive(true);
-            textTitle.text = "Store";
+            // The Store shows its own wooden "Store" sign, so the text title stays hidden here
+            textTitle.gameObject.SetActive(false);
             UIManager.GetUI<ShopScreen>(ScreenType.ShopScreen).UpdateTextUndo(PlayerInventoryManager.UndoCount);
             UIManager.GetUI<ShopScreen>(ScreenType.ShopScreen).UpdateTextMagicWand(PlayerInventoryManager.MagicWandCount);
             UIManager.GetUI<ShopScreen>(ScreenType.ShopScreen).UpdateTextShuffle(PlayerInventoryManager.ShuffleCount);
+            
 
             Source = source;
-            
         }
         
 
